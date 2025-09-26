@@ -1,7 +1,7 @@
 import unittest
 import pandas as pd
 from datetime import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from finance_plugin import DataFetcher, DataProcessor, Visualizer, Exporter
 import os
 import tempfile
