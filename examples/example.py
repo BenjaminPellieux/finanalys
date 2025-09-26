@@ -1,6 +1,7 @@
 from finance_plugin import DataFetcher, DataProcessor, Visualizer, Exporter
 
 # Configuration
+NAME = "Eutelsat Communications S.A. (ETL.PA)"
 TICKER = 'ETL.PA'
 START_DATE = '2025-09-01'
 END_DATE = '2025-09-26'
@@ -22,7 +23,7 @@ processed_data = processor.calculate_indicators()
 
 # 3. Visualisation
 print("\nGenerating plots...")
-Visualizer.plot_data(processed_data)
+Visualizer.plot_data(NAME, processed_data)
 
 # 4. Export CSV
 print(f"\nExporting data to {OUTPUT_CSV}...")
