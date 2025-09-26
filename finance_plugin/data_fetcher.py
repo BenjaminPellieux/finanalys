@@ -2,34 +2,27 @@ import pandas as pd
 import yfinance as yf
 
 class DataFetcher:
-    def __init__(self, ticker: str, start_date: str, end_date: str, frequency: str = '1d'):
+    def __init__(self, ticker: str, start_date: str, end_date: str, period: str = '5d', interval: str = '2m'):
         self.ticker = ticker
         self.start_date = start_date
         self.end_date = end_date
-        self.frequency = frequency
+        self.interval = interval
+        self.period = period
         self.data = None
 
     def fetch_data(self) -> pd.DataFrame:
         """Récupère les données financières via yfinance"""
         try:
-            # Télécharger les données
+            
             self.data = yf.download(
                 tickers=self.ticker,
-                start=self.start_date,
-                end=self.end_date,
-                interval=self.frequency,
-                auto_adjust=True,
-                progress=False
+                period=self.period,
+                interval=self.interval,
+                multi_level_index=False
             )
 
-            # Réinitialiser l'index
             self.data.reset_index(inplace=True)
 
-            # Debug: Afficher les premières lignes
-            print("\nDEBUG - First rows:")
-            print(self.data.head())
-
-            # Nettoyer le DataFrame
             self.data = self.clean_dataframe(self.data)
 
             return self.data
@@ -38,16 +31,15 @@ class DataFetcher:
 
     def clean_dataframe(self, df: pd.DataFrame) -> pd.DataFrame:
         """Nettoie le DataFrame pour avoir une structure correcte"""
-        # Supprimer les lignes inutiles
-        df = df.dropna(how='all')
+        #print(f"DEBUG {df.head()=}")
+        try:
+            df['Date'] = pd.to_datetime(df['Date'])
+        except:
+            try:
+                df['Date'] = pd.to_datetime(df['Datetime'])
+            except:
+                print("ERROR")
 
-        # Vérifier si le DataFrame a une structure multi-index
-        if isinstance(df.columns, pd.MultiIndex):
-            # Aplatir les colonnes
-            df.columns = df.columns.droplevel(0)
-
-        # Convertir les types de données
-        df['Datetime'] = pd.to_datetime(df['Datetime'])
         numeric_cols = ['Close', 'High', 'Low', 'Open', 'Volume']
         for col in numeric_cols:
             if col in df.columns:
